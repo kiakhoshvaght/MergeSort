@@ -1,48 +1,59 @@
 import Utils.Log;
 
+import java.util.Arrays;
+
 public class MergeSort {
     public static final String TAG = MergeSort.class.getName();
 
-    public static void bottomUpMergeSort(int[] a) {
-        Log.info(TAG, "FUNCTION : bottomUpMergeSort");
-        int width;
-        boolean isOdd = false;
-        if (a.length % 2 == 1) {
-            isOdd = true;
-            Log.info(TAG, "FUNCTION : bottomUpMergeSort => isOdd");
-        }
-        for (width = 1; width < a.length; width = 2 * width) {
-            // Combine pairs of array a of width
-            int i;
-            Log.info(TAG, "FUNCTION : bottomUpMergeSort => Width: " + width);
-            for (i = 0; i <= a.length; i = i + 2 * width) {
-                int left, middle, right;
+    private static void mergeWithAux(int[] array, int left, int middle, int right) {
+        int[] aux = new int[array.length];
+        for (int i = left; i <= middle; i++)
+            aux[i] = array[i];
 
-                left = i;
-                middle = i + width;
-                right = i + 2 * width;
+        for (int j = middle+1; j <= right; j++)
+            aux[j] = array[right-j+middle+1];
 
-                if (isOdd == true && width == 1 && right == a.length - 1) {
-                    Log.info(TAG, "FUNCTION : bottomUpMergeSort => Calling merge with: left: " + left + ", right: " + right + ", middle: " + middle);
-                    merge2(a, left, right);
-                } else {
-                    Log.info(TAG, "FUNCTION : bottomUpMergeSort => Calling merge with: left: " + left + ", right: " + (right - 1) + ", middle: " + middle);
-                    merge2(a, left, right - 1);
-                }
-            }
-        }
-        int twoPower = 1;
-
-        while(twoPower-1<a.length/2)
-            twoPower *= 2;
-
-        if(twoPower != a.length)
-            merge(a,0,twoPower-1,a.length-1);
-
+        int i = left, j = right;
+        for (int k = left; k <= right; k++)
+            if (aux[j] < aux[i])
+                array[k] = aux[j--];
+            else
+                array[k] = aux[i++];
     }
 
+    public static void merge(int[] array, int[] aux, int left, int middle, int right) {
+        int i, j, z = left;
+        if(array[middle] <= array[middle+1])return;
 
-    static void topDownMergeSort(int arr[], int left, int right) {
+        for(i=left, j = middle+1; i!=middle+1 || j!=right+1;){
+            if(i==middle+1)
+                while(j!=right+1)
+                    aux[z++] = array[j++];
+            else if(j==right+1)
+                while(i!=middle+1)
+                    aux[z++] = array[i++];
+            else if(array[i]<=array[j])
+                aux[z++] = array[i++];
+            else
+                aux[z++] = array[j++];
+        }
+        System.out.println(Arrays.toString(array));
+        System.out.println("start = "+left+" mid = "+middle+" end = "+right);
+        System.out.println(Arrays.toString(aux)+"\n");
+        System.arraycopy(aux, left, array, left, right-left+1);
+    }
+
+    public static void bottomUpMergeSort(int[] array) {
+        int N = array.length;
+        int aux[] = new int[array.length];
+        for (int i = 1; i < N; i *= 2) {
+            for (int j = 0; j < N - i; j += i + i) {
+                merge(array, aux, j, j + i - 1, Math.min(j + i + i - 1, N-1));
+            }
+        }
+    }
+
+    static void topDownMergeSort(int array[], int left, int right) {
         Log.info(TAG, "FUNCTION : topDownMergeSort");
         if (left < right) { //Checking if we have divided arrays enough
             Log.info(TAG, "FUNCTION : topDownMergeSort => Divided arrays before sorting: ");
@@ -50,17 +61,39 @@ public class MergeSort {
             int middle = left + (right - left) / 2;
 
             for (int i = left; i <= right; i++) {
-                System.out.print(arr[i] + ",");
+                System.out.print(array[i] + ",");
                 if (i == middle)
                     System.out.print(" | ");
             }
             System.out.println(" ");
 
             //Recursively calling this function for two divided arrays
-            topDownMergeSort(arr, left, middle);
-            topDownMergeSort(arr, middle + 1, right);
+            topDownMergeSort(array, left, middle);
+            topDownMergeSort(array, middle + 1, right);
             //Merging them
-            merge(arr, left, middle, right);
+            merge(array, left, middle, right);
+        }
+    }
+
+    static void topDownMergeSortWithAux(int array[], int left, int right) {
+        Log.info(TAG, "FUNCTION : topDownMergeSort");
+        if (left < right) { //Checking if we have divided arrays enough
+            Log.info(TAG, "FUNCTION : topDownMergeSort => Divided arrays before sorting: ");
+            //Calculating separation points
+            int middle = left + (right - left) / 2;
+
+            for (int i = left; i <= right; i++) {
+                System.out.print(array[i] + ",");
+                if (i == middle)
+                    System.out.print(" | ");
+            }
+            System.out.println(" ");
+
+            //Recursively calling this function for two divided arrays
+            topDownMergeSort(array, left, middle);
+            topDownMergeSort(array, middle + 1, right);
+            //Merging them
+            mergeWithAux(array, left, middle, right);
         }
     }
 
@@ -108,35 +141,6 @@ public class MergeSort {
             k++;
         }
     }
-
-    static void merge2(int arr[], int left, int right) {
-        Log.info(TAG, "FUNCTION : merge2");
-        if (left >= arr.length) {
-            Log.info(TAG, "FUNCTION : merge2 => left is greater or equal to size");
-            return;
-        }
-        if (right >= arr.length) {
-            Log.info(TAG, "FUNCTION : merge2 => Right is greater or equal to size");
-            right = arr.length - 1;
-        }
-        if (right - left == 1) {
-            Log.info(TAG, "FUNCTION : merge2 => case 0 & 1");
-            if (arr[left] > arr[right]) {
-                int temp = arr[left];
-                arr[left] = arr[right];
-                arr[right] = temp;
-            }
-        } else if (right - left % 2 == 1) {
-            Log.info(TAG, "FUNCTION : merge2 => case odd");
-            int middle = left + (right - left) / 2 + 1;
-            merge(arr, left, middle, right);
-        } else {
-            Log.info(TAG, "FUNCTION : merge2 => case even");
-            int middle = left + (right - left) / 2;
-            merge(arr, left, middle, right);
-        }
-    }
-
 
     public static void main(String[] args) {
         Log.info(TAG, "FUNCTION : main");
