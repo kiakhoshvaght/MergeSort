@@ -1,5 +1,9 @@
 import Utils.Log;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
 
 public class MergeSort {
     public static final String TAG = MergeSort.class.getName();
@@ -95,18 +99,9 @@ public class MergeSort {
     }
 
     static void topDownMergeSort(int array[], int left, int right) {
-//        Log.info(TAG, "FUNCTION : topDownMergeSort");
         if (left < right) { //Checking if we have divided arrays enough
-//            Log.info(TAG, "FUNCTION : topDownMergeSort => Divided arrays before sorting: ");
             //Calculating separation points
             int middle = left + (right - left) / 2;
-
-//            for (int i = left; i <= right; i++) {
-//                System.out.print(array[i] + ",");
-//                if (i == middle)
-//                    System.out.print(" | ");
-//            }
-//            System.out.println(" ");
 
             //Recursively calling this function for two divided arrays
             topDownMergeSort(array, left, middle);
@@ -117,18 +112,9 @@ public class MergeSort {
     }
 
     static void topDownMergeSortWithAux(int array[], int left, int right) {
-//        Log.info(TAG, "FUNCTION : topDownMergeSort");
         if (left < right) { //Checking if we have divided arrays enough
-//            Log.info(TAG, "FUNCTION : topDownMergeSort => Divided arrays before sorting: ");
             //Calculating separation points
             int middle = left + (right - left) / 2;
-
-//            for (int i = left; i <= right; i++) {
-//                System.out.print(array[i] + ",");
-//                if (i == middle)
-//                    System.out.print(" | ");
-//            }
-//            System.out.println(" ");
 
             //Recursively calling this function for two divided arrays
             topDownMergeSortWithAux(array, left, middle);
@@ -139,7 +125,6 @@ public class MergeSort {
     }
 
     static void merge(int arr[], int left, int middle, int right) {
-//        Log.info(TAG, "FUNCTION : merge");
         //Calculating sub arrays
         int i, j, k;
         int n1 = middle - left + 1;
@@ -189,6 +174,20 @@ public class MergeSort {
         }
     }
 
+    static void mergedQueue (Queue<Integer> q1, Queue<Integer> q2, Queue<Integer> result){
+            System.out.print(q1.peek() + ",");
+        while (!q1.isEmpty() || !q2.isEmpty()){
+            Log.info(TAG,"in while");
+            if(q1.peek() < q2.peek()){
+                Log.info(TAG,"in q1<q2");
+                result.add(q1.poll());
+            } else {
+                Log.info(TAG,"in else");
+                result.add(q2.poll());
+            }
+        }
+    }
+
     public static void main(String[] args) {
         Log.info(TAG, "FUNCTION : main");
 
@@ -228,6 +227,28 @@ public class MergeSort {
         for (int i = 0; i < NMTest1.length; i++)
             System.out.print(NMTest1[i] + ",");
         System.out.println(" ");
+
+        Queue<Integer> q1 = new LinkedList<Integer>();
+        q1.add(8);
+        q1.add(12);
+        q1.add(20);
+        q1.add(34);
+        q1.add(55);
+        Queue<Integer> q2 = new LinkedList<Integer>();
+        q1.add(5);
+        q1.add(14);
+        q1.add(33);
+        q1.add(38);
+        q1.add(51);
+        Queue<Integer> result = new LinkedList<Integer>();
+        mergedQueue(q1,q2,result);
+        Log.info(TAG,"FUNCTION : main => merge queue result: ");
+        for (int i = 0; i < result.size(); i++)
+            System.out.print(result.poll() + ",");
+        System.out.println(" ");
+
+
+
     }
 
 }
