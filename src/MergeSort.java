@@ -176,15 +176,18 @@ public class MergeSort {
 
     static void mergedQueue (Queue<Integer> q1, Queue<Integer> q2, Queue<Integer> result){
             System.out.print(q1.peek() + ",");
-        while (!q1.isEmpty() || !q2.isEmpty()){
-            Log.info(TAG,"in while");
+        while (!q1.isEmpty() && !q2.isEmpty()){
             if(q1.peek() < q2.peek()){
-                Log.info(TAG,"in q1<q2");
                 result.add(q1.poll());
             } else {
-                Log.info(TAG,"in else");
                 result.add(q2.poll());
             }
+        }
+        while (!q1.isEmpty()){
+            result.add(q1.poll());
+        }
+        while (!q2.isEmpty()){
+            result.add(q2.poll());
         }
     }
 
@@ -235,15 +238,16 @@ public class MergeSort {
         q1.add(34);
         q1.add(55);
         Queue<Integer> q2 = new LinkedList<Integer>();
-        q1.add(5);
-        q1.add(14);
-        q1.add(33);
-        q1.add(38);
-        q1.add(51);
+        q2.add(5);
+        q2.add(14);
+        q2.add(33);
+        q2.add(38);
+        q2.add(51);
         Queue<Integer> result = new LinkedList<Integer>();
         mergedQueue(q1,q2,result);
         Log.info(TAG,"FUNCTION : main => merge queue result: ");
-        for (int i = 0; i < result.size(); i++)
+        int size = result.size();
+        for (int i = 0; i < size; i++)
             System.out.print(result.poll() + ",");
         System.out.println(" ");
 
